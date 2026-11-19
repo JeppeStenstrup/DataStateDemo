@@ -1,0 +1,96 @@
+﻿@page "/"
+@namespace DataStateDemo.Components.Pages
+
+<PageTitle>Directory - DataState Demo</PageTitle>
+
+<div class="members-container">
+    <div class="members-header">
+        <div>
+            <h1 class="members-title">Member Directory</h1>
+            <p class="members-subtitle">Demonstrating DataState lifecycle patterns with simulated latency.</p>
+        </div>
+        <div class="members-header-actions">
+            <div class="delay-selector-wrapper">
+                <label for="delaySelect" class="delay-label">Latency:</label>
+                <select id="delaySelect" class="form-select form-select-sm delay-select" value="@selectedDelayMs" @onchange="OnDelayChanged" disabled="@isActionInProgress">
+                    <option value="1000">1.0s (Fast)</option>
+                    <option value="2500">2.5s (Default)</option>
+                    <option value="5000">5.0s (Slow Network)</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" @onclick="SimulateEmptyAsync" disabled="@isActionInProgress">
+                Simulate Empty
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" @onclick="SimulateErrorAsync" disabled="@isActionInProgress">
+                Simulate Error
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" @onclick="RefreshWithStaleDataAsync" disabled="@(isActionInProgress || !membersState.IsSuccess)">
+                Refresh
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" @onclick="LoadDataAsync" disabled="@isActionInProgress">
+                Load Directory
+            </button>
+        </div>
+    </div>
+
+    <div class="card members-card">
+        @if (membersState.IsInitialized && membersState.DataOrDefault != null)
+        {
+            <div class="refresh-progress-bar" role="progressbar" aria-label="Refreshing data"></div>
+        }
+        <div class="card-header">
+            <div class="card-header-left">
+                <span class="card-header-title">Members</span>
+                @if (membersState.IsInitialized)
+                {
+                    <span class="state-pill state-pill-loading">
+                        <span class="spinner-dot"></span> Updating
+                    </span>
+                }
+                else if (membersState.IsSuccess)
+                {
+                    <span class="state-pill state-pill-success">
+                        @membersState.Count() records
+                    </span>
+                }
+                else if (membersState.IsError)
+                {
+                    <span class="state-pill state-pill-error">Failed</span>
+                }
+            </div>
+            <div class="card-header-right">
+                @if (!membersState.IsUninitialized)
+                {
+                    <button type="button" class="btn-link-subtle" @onclick="ResetState" disabled="@isActionInProgress">
+                        Reset
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <TableSkeleton State="membersState"
+                           Columns="6"
+                           Rows="5"
+                           OnRetry="HandleRetryAsync"
+                           OnLoad="LoadDataAsync">
+                <TableHeader>
+                    <th class="col-number">#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                </TableHeader>
+                <RowTemplate Context="member">
+                    <td class="col-number">@member.Number</td>
+                    <td class="col-name">@member.Name</td>
+                    <td class="col-email">@member.Email</td>
+                    <td><span class="badge-role">@member.Role</span></td>
+                    <td><span class="badge-status badge-status-@member.Status.ToLowerInvariant()">@member.Status</span></td>
+                    <td class="col-date">@member.JoinedDate.ToString("yyyy-MM-dd")</td>
+                </RowTemplate>
+            </TableSkeleton>
+        </div>
+    </div>
+</div>

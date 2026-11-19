@@ -1,0 +1,52 @@
+.data-state-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 3rem 1.5rem;
+}
+
+.loading-label {
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.data-state-error-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background-color: #fef2f2;
+    border-bottom: 1px solid #fee2e2;
+}
+
+.error-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.error-badge {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 0.15rem 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #991b1b;
+    background-color: #fee2e2;
+    border-radius: 0.25rem;
+}
+
+.error-description {
+    margin: 0;
+    color: #7f1d1d;
+    font-size: 0.875rem;
+}
+
+.error-exception {
+    color: #b91c1c;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.75rem;
+}

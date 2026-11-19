@@ -1,0 +1,134 @@
+@namespace DataStateDemo.Components
+@typeparam TItem
+
+<DataStateView State="State" OnRetry="OnRetry">
+    <UninitializedContent>
+        @if (UninitializedContent != null)
+        {
+            @UninitializedContent
+        }
+        else
+        {
+            <div class="uninitialized-view">
+                <p class="uninitialized-title">@UninitializedTitle</p>
+                <p class="uninitialized-subtitle">@UninitializedSubtitle</p>
+                @if (OnLoad.HasDelegate)
+                {
+                    <button type="button" class="btn btn-primary btn-sm" @onclick="OnLoad">
+                        @LoadButtonText
+                    </button>
+                }
+            </div>
+        }
+    </UninitializedContent>
+
+    <InitializedContent Context="staleData">
+        @if (staleData != null && staleData.Count > 0)
+        {
+            <div class="table-responsive">
+                <table class="table @TableClass">
+                    <thead>
+                        <tr>
+                            @TableHeader
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in staleData)
+                        {
+                            <tr>
+                                @RowTemplate(item)
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="skeleton-table-wrapper" role="status" aria-label="Loading data">
+                <table class="skeleton-table">
+                    <thead>
+                        <tr>
+                            @for (var i = 0; i < Columns; i++)
+                            {
+                                <th><div class="skeleton-shimmer skeleton-header-cell"></div></th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var r = 0; r < Rows; r++)
+                        {
+                            <tr>
+                                @for (var c = 0; c < Columns; c++)
+                                {
+                                    <td><div class="skeleton-shimmer skeleton-cell"></div></td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </InitializedContent>
+
+    <EmptyContent>
+        @if (EmptyContent != null)
+        {
+            @EmptyContent
+        }
+        else
+        {
+            <div class="empty-view">
+                <p class="empty-title">@EmptyTitle</p>
+                <p class="empty-subtitle">@EmptySubtitle</p>
+                @if (OnLoad.HasDelegate)
+                {
+                    <button type="button" class="btn btn-secondary btn-sm" @onclick="OnLoad">
+                        @LoadButtonText
+                    </button>
+                }
+            </div>
+        }
+    </EmptyContent>
+
+    <ErrorContent Context="err">
+        @if (ErrorContent != null)
+        {
+            @ErrorContent(err)
+        }
+        else
+        {
+            <div class="error-view">
+                <div class="error-message">
+                    <strong>@err.Details.Code:</strong> @err.Details.Description
+                </div>
+                @if (OnRetry.HasDelegate)
+                {
+                    <button type="button" class="btn btn-danger btn-sm" @onclick="OnRetry">
+                        Retry
+                    </button>
+                }
+            </div>
+        }
+    </ErrorContent>
+
+    <SuccessContent Context="items">
+        <div class="table-responsive">
+            <table class="table @TableClass">
+                <thead>
+                    <tr>
+                        @TableHeader
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in items)
+                    {
+                        <tr>
+                            @RowTemplate(item)
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </SuccessContent>
+</DataStateView>

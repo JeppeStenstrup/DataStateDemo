@@ -1,0 +1,62 @@
+@namespace DataStateDemo.Components
+@typeparam T
+
+@switch (State)
+{
+    case null:
+    case DataState<T>.Uninitialized:
+        @if (UninitializedContent != null)
+        {
+            @UninitializedContent
+        }
+        break;
+
+    case DataState<T>.Initialized initialized:
+        @if (InitializedContent != null)
+        {
+            @InitializedContent(initialized.StaleData)
+        }
+        else
+        {
+            <div class="data-state-loading">
+                <div class="spinner-border text-primary" role="status"></div>
+                <span class="loading-label">@LoadingMessage</span>
+            </div>
+        }
+        break;
+
+    case DataState<T>.Error err:
+        @if (ErrorContent != null)
+        {
+            @ErrorContent(err)
+        }
+        else
+        {
+            <div class="data-state-error-banner" role="alert">
+                <div class="error-info">
+                    <span class="error-badge">@err.Details.Code</span>
+                    <p class="error-description">@err.Details.Description</p>
+                    @if (err.Exception is not null)
+                    {
+                        <small class="error-exception">@err.Exception.Message</small>
+                    }
+                </div>
+                @if (OnRetry.HasDelegate)
+                {
+                    <button type="button" class="btn btn-sm btn-outline-danger" @onclick="OnRetry">Retry</button>
+                }
+            </div>
+        }
+        break;
+
+    case DataState<T>.Success success:
+        @if (EmptyContent != null && success.CheckIsEmpty(IsEmptyPredicate))
+        {
+            @EmptyContent
+        }
+        else if (SuccessContent != null)
+        {
+            @SuccessContent(success.Data)
+        }
+        break;
+}
